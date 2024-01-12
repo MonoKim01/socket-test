@@ -11,6 +11,10 @@
         button.addEventListener('click', function () {
           socket.emit('buttonClicked', 'Button was clicked!');
         });
+          
+        socket.on("hello", () => {
+            console.log("hello");
+        })
       });
     </script>
   </head>

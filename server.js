@@ -26,6 +26,7 @@ io.on('connection', (socket) => {
 
   socket.on('buttonClicked', (message) => {
     console.log(message);
+    socket.emit("hello");
   });
 
   socket.on('disconnect', () => {
