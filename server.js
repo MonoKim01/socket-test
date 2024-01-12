@@ -1,18 +1,24 @@
-const http = require('http');
-const socketIo = require('socket.io');
-const fs = require('fs');
-const path = require('path');
 const express = require('express');
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 const app = express();
+const http = require('http');
+const socketIo = require('socket.io');
+
+
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)){
+  fs.mkdirSync(uploadsDir);
+}
 
 // Multer 설정
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/')  // 파일이 저장될 경로입니다.
+    cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   }
 });
 const upload = multer({ storage: storage });
@@ -26,7 +32,6 @@ io.on('connection', (socket) => {
 
   socket.on('buttonClicked', (message) => {
     console.log(message);
-    socket.emit('hello');
   });
 
   socket.on('disconnect', () => {
@@ -34,10 +39,21 @@ io.on('connection', (socket) => {
   });
 });
 
-// 업로드 라우트
+// 파일 목록 조회 라우트
+app.get('/files', (req, res) => {
+  fs.readdir(path.join(__dirname, 'uploads'), (err, files) => {
+    if (err) {
+      res.status(500).send('Error reading files');
+    } else {
+      res.json(files);
+    }
+  });
+});
+
+// 파일 업로드 라우트
 app.post('/upload', upload.single('file'), (req, res) => {
   console.log('File uploaded');
-  res.send('File uploaded successfully!');
+  res.redirect('/files');
 });
 
 app.use(express.static(path.join(__dirname)));

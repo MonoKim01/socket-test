@@ -1,25 +1,36 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Socket.IO Example</title>
+    <title>Socket.IO, File Upload and Message Example</title>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        var socket = io.connect('https://k810aef055275a.user-app.krampoline.com');
+        var socket = io.connect('http://localhost:3000');
 
-        var button = document.getElementById('myButton');
-        button.addEventListener('click', function () {
+        var messageButton = document.getElementById('messageButton');
+        messageButton.addEventListener('click', function () {
           socket.emit('buttonClicked', 'Button was clicked!');
         });
-          
-        socket.on("hello", () => {
-            console.log("hello");
-        });
-        
-        var fileInput = document.getElementById('fileInput');
-        var uploadButton = document.getElementById('uploadButton');
 
+        var fileList = document.getElementById('fileList');
+
+        function fetchFiles() {
+          fetch('/files')
+            .then(response => response.json())
+            .then(files => {
+              fileList.innerHTML = '';
+              files.forEach(file => {
+                var li = document.createElement('li');
+                li.textContent = file;
+                fileList.appendChild(li);
+              });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        var uploadButton = document.getElementById('uploadButton');
         uploadButton.addEventListener('click', function () {
+          var fileInput = document.getElementById('fileInput');
           var file = fileInput.files[0];
           var formData = new FormData();
           formData.append('file', file);
@@ -28,19 +39,20 @@
             method: 'POST',
             body: formData,
           })
-          .then(response => response.text())
-          .then(data => console.log(data))
+          .then(() => fetchFiles())
           .catch(error => console.error('Error:', error));
         });
 
+        fetchFiles();
       });
     </script>
   </head>
   <body>
-    <h1>Hello Socket.IO!</h1>
-    <button id="myButton">Click Me</button>
+    <h1>Socket.IO, File Upload and Message Example</h1>
+    <button id="messageButton">Send Message</button>
     <br/><br/>
     <input type="file" id="fileInput">
     <button id="uploadButton">Upload File</button>
+    <ul id="fileList"></ul>
   </body>
 </html>
