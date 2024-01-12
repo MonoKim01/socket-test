@@ -1,58 +1,77 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Socket.IO, File Upload and Message Example</title>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        var socket = io.connect('http://localhost:3000');
+    <head>
+        <title>Socket.IO, File Upload and Message Example</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var socket = io.connect('https://k810aef055275a.user-app.krampoline.com');
 
-        var messageButton = document.getElementById('messageButton');
-        messageButton.addEventListener('click', function () {
-          socket.emit('buttonClicked', 'Button was clicked!');
-        });
+                var messageButton = document.getElementById('messageButton');
+                messageButton.addEventListener('click', function () {
+                    socket.emit('buttonClicked', 'Button was clicked!');
+                });
 
-        var fileList = document.getElementById('fileList');
+                var fileList = document.getElementById('fileList');
 
-        function fetchFiles() {
-          fetch('/files')
-            .then(response => response.json())
-            .then(files => {
-              fileList.innerHTML = '';
-              files.forEach(file => {
-                var li = document.createElement('li');
-                li.textContent = file;
-                fileList.appendChild(li);
-              });
-            })
-            .catch(error => console.error('Error:', error));
-        }
+                function fetchFiles() {
+                    fetch('/files')
+                        .then((response) => response.json())
+                        .then((files) => {
+                            fileList.innerHTML = '';
+                            files.forEach((file) => {
+                                var li = document.createElement('li');
+                                li.textContent = file;
+                                fileList.appendChild(li);
+                            });
+                        })
+                        .catch((error) => console.error('Error:', error));
+                }
 
-        var uploadButton = document.getElementById('uploadButton');
-        uploadButton.addEventListener('click', function () {
-          var fileInput = document.getElementById('fileInput');
-          var file = fileInput.files[0];
-          var formData = new FormData();
-          formData.append('file', file);
+                var uploadButton = document.getElementById('uploadButton');
+                uploadButton.addEventListener('click', function () {
+                    var fileInput = document.getElementById('fileInput');
+                    var file = fileInput.files[0];
+                    var formData = new FormData();
+                    formData.append('file', file);
 
-          fetch('/upload', {
-            method: 'POST',
-            body: formData,
-          })
-          .then(() => fetchFiles())
-          .catch(error => console.error('Error:', error));
-        });
+                    fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                        .then(() => fetchFiles())
+                        .catch((error) => console.error('Error:', error));
+                });
 
-        fetchFiles();
-      });
-    </script>
-  </head>
-  <body>
-    <h1>Socket.IO, File Upload and Message Example</h1>
-    <button id="messageButton">Send Message</button>
-    <br/><br/>
-    <input type="file" id="fileInput">
-    <button id="uploadButton">Upload File</button>
-    <ul id="fileList"></ul>
-  </body>
+                fetchFiles();
+
+                var loadDataButton = document.getElementById('loadDataButton');
+                loadDataButton.addEventListener('click', function () {
+                    fetch('/data')
+                        .then((response) => response.json())
+                        .then((data) => {
+                            var dbDataList = document.getElementById('dbDataList');
+                            dbDataList.innerHTML = '';
+                            data.forEach((item) => {
+                                var li = document.createElement('li');
+                                li.textContent = `ID: ${item.id}, Detail: ${item.detail}`;
+                                dbDataList.appendChild(li);
+                            });
+                        })
+                        .catch((error) => console.error('Error:', error));
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <h1>Socket.IO, File Upload and Message Example</h1>
+        <button id="messageButton">Send Message</button>
+        <br /><br />
+        <input type="file" id="fileInput" />
+        <button id="uploadButton">Upload File</button>
+        <ul id="fileList"></ul>
+        <br /><br />
+        <button id="loadDataButton">Load Data from DB</button>
+        <ul id="dbDataList"></ul>
+    </body>
 </html>
