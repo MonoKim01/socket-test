@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO Example</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var socket = io.connect('https://chat-server.dev.goorm.io');
+
+        var button = document.getElementById('myButton');
+        button.addEventListener('click', function () {
+          socket.emit('buttonClicked', 'Button was clicked!');
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Hello Socket.IO!</h1>
+    <button id="myButton">Click Me</button>
+  </body>
+</html>
