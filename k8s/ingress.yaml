@@ -3,8 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-	# 64m 로 제한해둔 예제입니다. app 에서도 설정해야합니다. ( 최대 512MB )
-	nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
   labels:
     app.kubernetes.io/managed-by: kargocd
   name: krampoline
@@ -13,8 +12,8 @@ spec:
   rules:
     - http:
         paths:
-          - backend:
+          - path: /
+            pathType: Prefix
+            backend:
               serviceName: krampoline
               servicePort: 3000
-              path: /
-              pathType: Prefix
